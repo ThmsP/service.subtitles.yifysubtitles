@@ -4,6 +4,7 @@
 from shutil import rmtree
 from tempfile import mkdtemp
 from omdbapi import OMDbAPI
+from rest7api import Rest7API
 from yifysubtitles import YifySubtitles
 from yifysubtitles import YifySubtitlesListener
 from yifysubtitles import YifySubtitlesLogger
@@ -13,7 +14,8 @@ class TestService(YifySubtitlesListener, YifySubtitlesLogger):
     def __init__(self):
         super(TestService, self).__init__()
 
-        self._omdbapi = OMDbAPI()
+        # self._omdbapi = OMDbAPI()
+        self._omdbapi = Rest7API()
         self._omdbapi.logger = self
 
         self._yifysubtitles = YifySubtitles()

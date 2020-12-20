@@ -177,26 +177,35 @@ class YifySubtitles:
         :type languages: list of unicode
         """
 
-        pattern = re.compile(r'<li data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*'
-                             r'<span class="rating">\s*(?:<span.*?>.*?</span>\s*)*</span>\s*'
-                             r'<a class="subtitle-page" href="(.*?)">\s*'
-                             r'<span class="flag flag-.*?">.*?</span>\s*'
-                             r'<span>(.*?)</span>.*?'
-                             r'<span class="subdesc">.*?</span>\s*'
-                             r'(?:<span class="verified-subtitle" title="verified">.*?</span>\s*)?'
-                             r'</a>'
-                             r'.*?'
-                             r'</li>',
+        # pattern = re.compile(r'<li data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*'
+        #                      r'<span class="rating">\s*(?:<span.*?>.*?</span>\s*)*</span>\s*'
+        #                      r'<a class="subtitle-page" href="(.*?)">\s*'
+        #                      r'<span class="flag flag-.*?">.*?</span>\s*'
+        #                      r'<span>(.*?)</span>.*?'
+        #                      r'<span class="subdesc">.*?</span>\s*'
+        #                      r'(?:<span class="verified-subtitle" title="verified">.*?</span>\s*)?'
+        #                      r'</a>'
+        #                      r'.*?'
+        #                      r'</li>',
+        pattern = re.compile(r'<span class="sub-lang">(.*?)</span>'
+                                        r'</td><td><a href="(.*?)">',
                              re.UNICODE)
 
+        # self.logger.debug(u'page {0}'.format(page))
+        self.logger.debug(u'languages {0}'.format(languages))
+
         for match in pattern.findall(page):
-            language = self._get_subtitle_language(unicode(match[2]))
+            self.logger.debug(u'match {0} : {1}'.format(match[0], match[1]))
+            language = self._get_subtitle_language(unicode(match[0]))
             page_url = unicode(match[1])
             rating = self._get_subtitle_rating(unicode(match[0]))
+
+            self.logger.debug(u'language {0}'.format(language))
 
             if language in languages:
                 page = self._fetch_subtitle_page(page_url)
                 subtitle_url = self._get_subtitle_url(page)
+                self.logger.debug(u'subtitle_url {0} '.format(subtitle_url))
 
                 self._list_subtitles_archive({
                     'language': language,
@@ -245,6 +254,7 @@ class YifySubtitles:
         return {
             u'Brazilian Portuguese': u'Portuguese (Brazil)',
             u'Farsi/Persian': u'Persian',
+            u'French':u'French',
         }.get(language, language)
 
     @staticmethod
@@ -258,8 +268,8 @@ class YifySubtitles:
         """
 
         return {
-            u'high-rating': u'5',
-            u'low-rating': u'0',
+            u'label-success': u'5',
+            u'label-danger': u'0',
         }.get(rating, u'3')
 
     @staticmethod
@@ -272,6 +282,6 @@ class YifySubtitles:
         :rtype: unicode
         """
 
-        pattern = re.compile(r'<a href="([^"]*)" class="[^"]*\bdownload-subtitle\b[^"]*">', re.UNICODE)
+        pattern = re.compile(r'<a class="btn-icon download-subtitle" href="(.*?)"><span class="icon32 download"></span><span class="title">DOWNLOAD SUBTITLE</span></a>', re.UNICODE)
         match = pattern.search(page)
         return unicode(match.group(1)) if match else None
