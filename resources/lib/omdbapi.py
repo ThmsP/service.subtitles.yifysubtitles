@@ -17,9 +17,11 @@ class OMDbAPI:
     The OMDb API.
     """
 
-    def __init__(self):
+    def __init__(self, apikey):
         self.logger = None
-        self._base_url = u'http://www.omdbapi.com'
+        self.apikey = apikey
+        self._base_url = u'http://www.omdbapi.com/?apikey={0}'.format(self.apikey)
+
 
     def search(self, title, year):
         """
@@ -35,7 +37,7 @@ class OMDbAPI:
 
         self.logger.debug(u'Looking for {0} ({1})'.format(title, year))
 
-        url = u'{0}/?t={1}&y={2}'.format(self._base_url, quote_plus(title), year)
+        url = u'{0}&t={1}&y={2}'.format(self._base_url, quote_plus(title), year)
         with closing(urlopen(url)) as f:
             response = loads(f.read())
 
@@ -43,6 +45,7 @@ class OMDbAPI:
             self.logger.warn(u'No match found for {0} ({1})'.format(title, year))
             return None
 
+        print("response : {0}".format(response))
         imdb_id = response['imdbID']
         self.logger.debug(u'IMDB identifier {2} found for {0} ({1})'.format(title, year, imdb_id))
 

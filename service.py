@@ -35,6 +35,7 @@ sys.path.append(__resource__)
 
 
 from omdbapi import OMDbAPI
+from omdbapikey import apikey # This is personal, get one : http://www.omdbapi.com/
 from yifysubtitles import YifySubtitles, YifySubtitlesListener, YifySubtitlesLogger
 
 
@@ -57,7 +58,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         self._set_languages()
         self._cleanup_temp()
 
-        self._omdbapi = OMDbAPI()
+        self._omdbapi = OMDbAPI(apikey)
         self._omdbapi.logger = self
 
         self._provider = YifySubtitles()

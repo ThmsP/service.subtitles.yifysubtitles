@@ -96,7 +96,7 @@ class YifySubtitles:
         self.workdir = None
         """:type: unicode"""
 
-        self._base_url = u'http://www.yifysubtitles.com'
+        self._base_url = u'https://yts-subs.com'
 
     def download(self, url, filename):
         """Download a subtitle.
@@ -177,19 +177,20 @@ class YifySubtitles:
         :type languages: list of unicode
         """
 
-        # pattern = re.compile(r'<li data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*'
-        #                      r'<span class="rating">\s*(?:<span.*?>.*?</span>\s*)*</span>\s*'
-        #                      r'<a class="subtitle-page" href="(.*?)">\s*'
-        #                      r'<span class="flag flag-.*?">.*?</span>\s*'
-        #                      r'<span>(.*?)</span>.*?'
-        #                      r'<span class="subdesc">.*?</span>\s*'
-        #                      r'(?:<span class="verified-subtitle" title="verified">.*?</span>\s*)?'
-        #                      r'</a>'
-        #                      r'.*?'
-        #                      r'</li>',
-        pattern = re.compile(r'<span class="sub-lang">(.*?)</span>'
-                                        r'</td><td><a href="(.*?)">',
+        pattern = re.compile(r'<li data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*'
+                             r'<span class="rating">\s*(?:<span.*?>.*?</span>\s*)*</span>\s*'
+                             r'<a class="subtitle-page" href="(.*?)">\s*'
+                             r'<span class="flag flag-.*?">.*?</span>\s*'
+                             r'<span>(.*?)</span>.*?'
+                             r'<span class="subdesc">.*?</span>\s*'
+                             r'(?:<span class="verified-subtitle" title="verified">.*?</span>\s*)?'
+                             r'</a>'
+                             r'.*?'
+                             r'</li>',
                              re.UNICODE)
+        # pattern = re.compile(r'<span class="sub-lang">(.*?)</span>'
+                             # r'</td><td><a href="(.*?)">',
+                             # re.UNICODE)
 
         # self.logger.debug(u'page {0}'.format(page))
         self.logger.debug(u'languages {0}'.format(languages))

@@ -1,0 +1,12 @@
+# Kodi Media Center language file
+# Addon Name: Yify subtitles
+# Addon id: service.subtitles.yifysubtitles
+# Addon Provider: ThmsP
+
+msgctxt "#32001"
+msgid "Required"
+msgstr ""
+
+msgctxt "#32002"
+msgid "OMDB api key"
+msgstr ""
