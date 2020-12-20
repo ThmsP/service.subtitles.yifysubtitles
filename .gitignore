@@ -1,2 +1,7 @@
 .idea/
 *.pyc
+resources/lib/omdbapikey.py
+*log
+
+*workspace
+*.bak
