@@ -6,17 +6,28 @@ YIFY Subtitles website interface.
 """
 
 
-from io import StringIO
 from abc import abstractmethod, ABCMeta
 from contextlib import closing
-from urllib.request import urlopen
+
 from zipfile import ZipFile
 import re
 import os
 
+import sys
+pyver = sys.version_info.major
+if pyver >= 3: 
+    from io import StringIO
+    from urllib.request import urlopen
+else :
+    from StringIO import StringIO
+    from urllib2 import urlopen
+from six import add_metaclass
 
-class YifySubtitlesLogger(metaclass=ABCMeta):
+
+@add_metaclass(ABCMeta)
+class YifySubtitlesLogger():
     """Abstract logger."""
+
 
     def __init__(self):
         pass
@@ -54,7 +65,8 @@ class YifySubtitlesLogger(metaclass=ABCMeta):
         """
 
 
-class YifySubtitlesListener(metaclass=ABCMeta):
+@add_metaclass(ABCMeta)
+class YifySubtitlesListener():
     """Abstract YIFY Subtitles event listener."""
 
     def __init__(self):

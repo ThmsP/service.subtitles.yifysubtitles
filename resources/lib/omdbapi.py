@@ -8,8 +8,15 @@ The OMDb API interface.
 
 from contextlib import closing
 from json import loads
-from urllib.parse import quote_plus
-from urllib.request import urlopen
+
+import sys
+pyver = sys.version_info.major
+if pyver >= 3: 
+    from urllib.request import urlopen
+    from urllib.parse import quote_plus
+else :
+    from urllib import quote_plus
+    from urllib2 import urlopen
 
 
 class OMDbAPI:

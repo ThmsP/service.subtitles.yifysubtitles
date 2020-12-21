@@ -8,7 +8,7 @@ YIFY Subtitles service plugin.
 
 import os
 import sys
-import urllib.request, urllib.parse, urllib.error
+
 import shutil
 
 import xbmc
@@ -16,6 +16,13 @@ import xbmcvfs
 import xbmcaddon
 import xbmcgui
 import xbmcplugin
+
+import sys
+pyver = sys.version_info.major
+if pyver >= 3: 
+    import urllib.request, urllib.parse, urllib.error
+else :
+    import urllib
 
 
 __addon__ = xbmcaddon.Addon()

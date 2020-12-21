@@ -1,4 +1,4 @@
-from . import yifytest as tst
+import yifytest as tst
 
 test = tst.TestService()
 imdb=test.lookup('oblivion','2013')
