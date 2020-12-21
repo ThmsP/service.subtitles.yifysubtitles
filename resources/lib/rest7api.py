@@ -8,8 +8,8 @@ The Rest7 API interface.
 
 from contextlib import closing
 from json import loads
-from urllib import quote_plus
-from urllib2 import urlopen
+from urllib.parse import quote_plus
+from urllib.request import urlopen
 
 
 class Rest7API:
@@ -19,7 +19,7 @@ class Rest7API:
 
     def __init__(self):
         self.logger = None
-        self._base_url = u'http://api.rest7.com/v1/movie_info.php'
+        self._base_url = 'http://api.rest7.com/v1/movie_info.php'
 
     def search(self, title, year):
         """
@@ -35,22 +35,22 @@ class Rest7API:
 
 
 
-        self.logger.debug(u'Looking for {0} ({1})'.format(title, year))
+        self.logger.debug('Looking for {0} ({1})'.format(title, year))
 
         # url = u'{0}/?t={1}&y={2}'.format(self._base_url, quote_plus(title), year)
-        url = u'{0}?title={1}'.format(self._base_url, quote_plus(title))
+        url = '{0}?title={1}'.format(self._base_url, quote_plus(title))
         with closing(urlopen(url)) as f:
             response = loads(f.read())
             # response=f.read()
 
         # response is a list of films, we have to filter by date
         # print 'DEBUGGGING'
-        print response
-        print response['success']
+        print(response)
+        print(response['success'])
 
         # if not response.get('Response', u'False') == u'True':
         if not response['success'] :
-            self.logger.warn(u'No match found for {0} ({1})'.format(title, year))
+            self.logger.warn('No match found for {0} ({1})'.format(title, year))
             return None
 
         match = None
@@ -58,10 +58,10 @@ class Rest7API:
             if mv['year'] == year : 
                 match=mv
                 break
-        print match
+        print(match)
 
         imdb_id = match['imdb']
         # print imdb_id
-        self.logger.debug(u'IMDB identifier {2} found for {0} ({1})'.format(title, year, imdb_id))
+        self.logger.debug('IMDB identifier {2} found for {0} ({1})'.format(title, year, imdb_id))
 
         return imdb_id

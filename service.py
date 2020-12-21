@@ -8,7 +8,7 @@ YIFY Subtitles service plugin.
 
 import os
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import shutil
 
 import xbmc
@@ -76,7 +76,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
             elif action in ['search', 'manualsearch']:
                 self._search()
             else:
-                self.warn(u'unknown action {0}'.format(action))
+                self.warn('unknown action {0}'.format(action))
 
         finally:
             self._done()
@@ -84,7 +84,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
     def _done(self):
         """Tell XBMC that we're done."""
 
-        self.debug(u'Done')
+        self.debug('Done')
         xbmcplugin.endOfDirectory(self._handle)
 
     def _download(self):
@@ -128,7 +128,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         :type subtitle: dict of [str, unicode]
         """
 
-        self.info(u'Found {0} subtitle {1}:{2}'.format(subtitle['language'], subtitle['url'], subtitle['filename']))
+        self.info('Found {0} subtitle {1}:{2}'.format(subtitle['language'], subtitle['url'], subtitle['filename']))
 
         list_item = xbmcgui.ListItem(
             label=subtitle['language'],
@@ -140,7 +140,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         list_item.setProperty('sync', 'false')
         list_item.setProperty('hearing_imp', 'false')
 
-        url = u'plugin://{0}/?action=download&url={1}&filename={2}'.format(
+        url = 'plugin://{0}/?action=download&url={1}&filename={2}'.format(
             __scriptid__,
             subtitle['url'],
             subtitle['filename']
@@ -155,7 +155,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         :type path: unicode
         """
 
-        self.info(u'Subtitle {0} downloaded'.format(path))
+        self.info('Subtitle {0} downloaded'.format(path))
 
         list_item = xbmcgui.ListItem(label=path)
         xbmcplugin.addDirectoryItem(handle=self._handle, url=path, listitem=list_item, isFolder=False)
@@ -167,7 +167,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         :type message: unicode
         """
 
-        xbmc.log(u'{0} - {1}'.format(u'YIFY Subtitles', message).encode('utf-8'), level=xbmc.LOGDEBUG)
+        xbmc.log('{0} - {1}'.format('YIFY Subtitles', message).encode('utf-8'), level=xbmc.LOGDEBUG)
 
     def info(self, message):
         """Print an informative message.
@@ -176,7 +176,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         :type message: unicode
         """
 
-        xbmc.log(u'{0} - {1}'.format(u'YIFY Subtitles', message).encode('utf-8'), level=xbmc.LOGINFO)
+        xbmc.log('{0} - {1}'.format('YIFY Subtitles', message).encode('utf-8'), level=xbmc.LOGINFO)
 
     def warn(self, message):
         """Print a warning message.
@@ -185,7 +185,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         :type message: unicode
         """
 
-        xbmc.log(u'{0} - {1}'.format(u'YIFY Subtitles', message).encode('utf-8'), level=xbmc.LOGWARNING)
+        xbmc.log('{0} - {1}'.format('YIFY Subtitles', message).encode('utf-8'), level=xbmc.LOGWARNING)
 
     def error(self, message):
         """Print an error message.
@@ -194,7 +194,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         :type message: unicode
         """
 
-        xbmc.log(u'{0} - {1}'.format(u'YIFY Subtitles', message).encode('utf-8'), level=xbmc.LOGERROR)
+        xbmc.log('{0} - {1}'.format('YIFY Subtitles', message).encode('utf-8'), level=xbmc.LOGERROR)
 
     @staticmethod
     def _cleanup_temp():
@@ -210,7 +210,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         self._languages = []
         self._languages_codes = []
         if 'languages' in self._parameters:
-            for language in urllib.unquote(self._parameters['languages']).decode('utf-8').split(','):
+            for language in urllib.parse.unquote(self._parameters['languages']).decode('utf-8').split(','):
                 self._languages.append(xbmc.convertLanguage(language, xbmc.ENGLISH_NAME))
                 self._languages_codes.append(xbmc.convertLanguage(language, xbmc.ISO_639_1))
 

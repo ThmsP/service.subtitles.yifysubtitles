@@ -6,19 +6,17 @@ YIFY Subtitles website interface.
 """
 
 
-from StringIO import StringIO
+from io import StringIO
 from abc import abstractmethod, ABCMeta
 from contextlib import closing
-from urllib2 import urlopen
+from urllib.request import urlopen
 from zipfile import ZipFile
 import re
 import os
 
 
-class YifySubtitlesLogger:
+class YifySubtitlesLogger(metaclass=ABCMeta):
     """Abstract logger."""
-
-    __metaclass__ = ABCMeta
 
     def __init__(self):
         pass
@@ -56,10 +54,8 @@ class YifySubtitlesLogger:
         """
 
 
-class YifySubtitlesListener:
+class YifySubtitlesListener(metaclass=ABCMeta):
     """Abstract YIFY Subtitles event listener."""
-
-    __metaclass__ = ABCMeta
 
     def __init__(self):
         pass
@@ -96,7 +92,7 @@ class YifySubtitles:
         self.workdir = None
         """:type: unicode"""
 
-        self._base_url = u'https://yts-subs.com'
+        self._base_url = 'https://yts-subs.com'
 
     def download(self, url, filename):
         """Download a subtitle.
@@ -111,11 +107,11 @@ class YifySubtitles:
 
         path = os.path.join(self.workdir, os.path.basename(filename))
 
-        self.logger.debug(u'Downloading subtitle archive from {0}'.format(url))
+        self.logger.debug('Downloading subtitle archive from {0}'.format(url))
         with closing(urlopen(url)) as f:
             content = StringIO(f.read())
 
-        self.logger.debug(u'Extracting subtitle to {0}'.format(path))
+        self.logger.debug('Extracting subtitle to {0}'.format(path))
         with ZipFile(content) as z, closing(open(path.encode('utf-8'), mode='wb')) as f:
             f.write(z.read(filename))
 
@@ -132,7 +128,7 @@ class YifySubtitles:
         :type languages: list of unicode
         """
 
-        self.logger.debug(u'Searching subtitles for IMDB identifier {0}'.format(imdb_id))
+        self.logger.debug('Searching subtitles for IMDB identifier {0}'.format(imdb_id))
         page = self._fetch_movie_page(imdb_id)
         self._list_subtitles(page, languages)
 
@@ -150,7 +146,7 @@ class YifySubtitles:
 
         with closing(urlopen(url)) as page:
             encoding = page.info().getparam('charset')
-            return unicode(page.read(), encoding)
+            return str(page.read(), encoding)
 
     def _fetch_subtitle_page(self, link):
         """Fetch a subtitle page.
@@ -166,7 +162,7 @@ class YifySubtitles:
 
         with closing(urlopen(url)) as page:
             encoding = page.info().getparam('charset')
-            return unicode(page.read(), encoding)
+            return str(page.read(), encoding)
 
     def _list_subtitles(self, page, languages):
         """List subtitles from the movie page.
@@ -193,20 +189,20 @@ class YifySubtitles:
                              # re.UNICODE)
 
         # self.logger.debug(u'page {0}'.format(page))
-        self.logger.debug(u'languages {0}'.format(languages))
+        self.logger.debug('languages {0}'.format(languages))
 
         for match in pattern.findall(page):
-            self.logger.debug(u'match {0} : {1}'.format(match[0], match[1]))
-            language = self._get_subtitle_language(unicode(match[0]))
-            page_url = unicode(match[1])
-            rating = self._get_subtitle_rating(unicode(match[0]))
+            self.logger.debug('match {0} : {1}'.format(match[0], match[1]))
+            language = self._get_subtitle_language(str(match[0]))
+            page_url = str(match[1])
+            rating = self._get_subtitle_rating(str(match[0]))
 
-            self.logger.debug(u'language {0}'.format(language))
+            self.logger.debug('language {0}'.format(language))
 
             if language in languages:
                 page = self._fetch_subtitle_page(page_url)
                 subtitle_url = self._get_subtitle_url(page)
-                self.logger.debug(u'subtitle_url {0} '.format(subtitle_url))
+                self.logger.debug('subtitle_url {0} '.format(subtitle_url))
 
                 self._list_subtitles_archive({
                     'language': language,
@@ -215,7 +211,7 @@ class YifySubtitles:
                 })
 
             else:
-                self.logger.debug(u'Ignoring {0} subtitle {1}'.format(language, page_url))
+                self.logger.debug('Ignoring {0} subtitle {1}'.format(language, page_url))
 
     def _list_subtitles_archive(self, archive):
         """List subtitles from a ZIP archive.
@@ -234,7 +230,7 @@ class YifySubtitles:
             ]
 
         for filename in filenames:
-            self.logger.debug(u'Found {0} subtitle {1}:{2}'.format(archive['language'], archive['url'], filename))
+            self.logger.debug('Found {0} subtitle {1}:{2}'.format(archive['language'], archive['url'], filename))
             self.listener.on_subtitle_found({
                 'filename': filename,
                 'language': archive['language'],
@@ -253,9 +249,9 @@ class YifySubtitles:
         """
 
         return {
-            u'Brazilian Portuguese': u'Portuguese (Brazil)',
-            u'Farsi/Persian': u'Persian',
-            u'French':u'French',
+            'Brazilian Portuguese': 'Portuguese (Brazil)',
+            'Farsi/Persian': 'Persian',
+            'French':'French',
         }.get(language, language)
 
     @staticmethod
@@ -269,9 +265,9 @@ class YifySubtitles:
         """
 
         return {
-            u'label-success': u'5',
-            u'label-danger': u'0',
-        }.get(rating, u'3')
+            'label-success': '5',
+            'label-danger': '0',
+        }.get(rating, '3')
 
     @staticmethod
     def _get_subtitle_url(page):
@@ -285,4 +281,4 @@ class YifySubtitles:
 
         pattern = re.compile(r'<a class="btn-icon download-subtitle" href="(.*?)"><span class="icon32 download"></span><span class="title">DOWNLOAD SUBTITLE</span></a>', re.UNICODE)
         match = pattern.search(page)
-        return unicode(match.group(1)) if match else None
+        return str(match.group(1)) if match else None
