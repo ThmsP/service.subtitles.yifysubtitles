@@ -3,12 +3,12 @@
 
 from shutil import rmtree
 from tempfile import mkdtemp
-from omdbapi import OMDbAPI
-from omdbapikey import apikey # This is personal, get one : http://www.omdbapi.com/
+from .omdbapi import OMDbAPI
+from .omdbapikey import apikey # This is personal, get one : http://www.omdbapi.com/
 # from rest7api import Rest7API
-from yifysubtitles import YifySubtitles
-from yifysubtitles import YifySubtitlesListener
-from yifysubtitles import YifySubtitlesLogger
+from .yifysubtitles import YifySubtitles
+from .yifysubtitles import YifySubtitlesListener
+from .yifysubtitles import YifySubtitlesLogger
 
 
 class TestService(YifySubtitlesListener, YifySubtitlesLogger):
