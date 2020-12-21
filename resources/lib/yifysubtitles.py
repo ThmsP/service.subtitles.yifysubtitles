@@ -199,23 +199,13 @@ class YifySubtitles:
         :type languages: list of unicode
         """
 
-        pattern = re.compile(r'<li data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*'
-                             r'<span class="rating">\s*(?:<span.*?>.*?</span>\s*)*</span>\s*'
-                             r'<a class="subtitle-page" href="(.*?)">\s*'
-                             r'<span class="flag flag-.*?">.*?</span>\s*'
-                             r'<span>(.*?)</span>.*?'
-                             r'<span class="subdesc">.*?</span>\s*'
-                             r'(?:<span class="verified-subtitle" title="verified">.*?</span>\s*)?'
-                             r'</a>'
-                             r'.*?'
-                             r'</li>',
-                             re.UNICODE)
-        # pattern = re.compile(r'<span class="sub-lang">(.*?)</span>'
-                             # r'</td><td><a href="(.*?)">',
-                             # re.UNICODE)
+        pattern = re.compile(r'<tr data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*<td class="rating-cell">\s*.*</span>\n\s*</td>\n\s*<td class.*\n\s*<span.*>.*</span>\n\s*<span class="sub-lang">(.*)?</span>\n\s*</td>\n\s*<td>\n\s*<a href="(.*)?">', re.UNICODE)
 
         # self.logger.debug(u'page {0}'.format(page))
         self.logger.debug('languages {0}'.format(languages))
+        self.logger.debug('page {0}'.format(page))
+        self.logger.debug('page type {0} len {1}'.format(type(page), len(page)))
+        self.logger.debug('matchs {0}'.format(pattern.findall(page)))
 
         for match in pattern.findall(page):
             self.logger.debug('match {0} : {1}'.format(match[0], match[1]))
@@ -223,6 +213,8 @@ class YifySubtitles:
             page_url = str(match[1])
             rating = self._get_subtitle_rating(str(match[0]))
 
+            self.logger.debug('page_url {0}'.format(page_url))
+            self.logger.debug('rating {0}'.format(rating))
             self.logger.debug('language {0}'.format(language))
 
             if language in languages:
