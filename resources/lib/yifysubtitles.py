@@ -17,10 +17,10 @@ import sys
 pyver = sys.version_info.major
 if pyver >= 3: 
     from io import StringIO
-    from urllib.request import urlopen
+    from urllib.request import urlopen, Request
 else :
     from StringIO import StringIO
-    from urllib2 import urlopen
+    from urllib2 import urlopen, Request
 from six import add_metaclass
 
 
@@ -142,6 +142,7 @@ class YifySubtitles:
 
         self.logger.debug('Searching subtitles for IMDB identifier {0}'.format(imdb_id))
         page = self._fetch_movie_page(imdb_id)
+        # self.logger.debug('Subtitle page {0}'.format(page))
         self._list_subtitles(page, languages)
 
     def _fetch_movie_page(self, imdb_id):
@@ -156,8 +157,18 @@ class YifySubtitles:
         url = '{0}/movie-imdb/{1}'.format(self._base_url, imdb_id)
         self.logger.debug('Fetching movie page from {0}'.format(url))
 
-        with closing(urlopen(url)) as page:
-            encoding = page.info().getparam('charset')
+        # headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        req = Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
+
+        with closing(urlopen(req)) as page:
+            encoding = page.headers.get_content_charset('charset')
+            self.logger.debug("encoding {0}".format(encoding))
+            # self.logger.debug("_fetch_movie_page page {0} type {1}".format(str(page.read(), encoding), 
+                                                                            # type(page.read())))
+            # with open('/home/thms/Documents/Dev/YIFI_sub_kodi/service.subtitles.yifysubtitles/page_from_fetch.data', 'w') as data:
+                # data.write(str(page.read(), encoding))
+
             return str(page.read(), encoding)
 
     def _fetch_subtitle_page(self, link):
@@ -172,8 +183,11 @@ class YifySubtitles:
         url = '{0}{1}'.format(self._base_url, link)
         self.logger.debug('Fetching subtitle page from {0}'.format(url))
 
-        with closing(urlopen(url)) as page:
-            encoding = page.info().getparam('charset')
+        req = Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
+
+        with closing(urlopen(req)) as page:
+            encoding = page.headers.get_content_charset('charset')
             return str(page.read(), encoding)
 
     def _list_subtitles(self, page, languages):
