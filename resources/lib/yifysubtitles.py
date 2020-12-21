@@ -16,7 +16,7 @@ import os
 import sys
 pyver = sys.version_info.major
 if pyver >= 3: 
-    from io import StringIO
+    from io import StringIO, BytesIO
     from urllib.request import urlopen, Request
 else :
     from StringIO import StringIO
@@ -170,6 +170,8 @@ class YifySubtitles:
                 # data.write(str(page.read(), encoding))
 
             return str(page.read(), encoding)
+            # return page.read()
+
 
     def _fetch_subtitle_page(self, link):
         """Fetch a subtitle page.
@@ -199,7 +201,16 @@ class YifySubtitles:
         :type languages: list of unicode
         """
 
-        pattern = re.compile(r'<tr data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*<td class="rating-cell">\s*.*</span>\n\s*</td>\n\s*<td class.*\n\s*<span.*>.*</span>\n\s*<span class="sub-lang">(.*)?</span>\n\s*</td>\n\s*<td>\n\s*<a href="(.*)?">', re.UNICODE)
+        # UGLY hack but I don't understand why this is not working ...
+        with open('temp.data', 'w') as data:
+            data.write(page)
+        page = ''
+        with open('temp.data','r') as data:
+            page=''.join(data.readlines())
+
+        # page = pge.decode('utf-8')
+        # page = str(pge, 'utf-8')
+        pattern = re.compile(r'<tr data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*<td class="rating-cell">\s*.*</span>\n\s*</td>\n\s*<td class.*\n\s*<span.*>.*</span>\n\s*<span class="sub-lang">(.*)?</span>\n\s*</td>\n\s*<td>\n\s*<a href="(.*)?">')
 
         # self.logger.debug(u'page {0}'.format(page))
         self.logger.debug('languages {0}'.format(languages))
@@ -208,11 +219,11 @@ class YifySubtitles:
         self.logger.debug('matchs {0}'.format(pattern.findall(page)))
 
         for match in pattern.findall(page):
-            self.logger.debug('match {0} : {1}'.format(match[0], match[1]))
-            language = self._get_subtitle_language(str(match[0]))
-            page_url = str(match[1])
+            language = self._get_subtitle_language(str(match[1]))
+            page_url = str(match[2])
             rating = self._get_subtitle_rating(str(match[0]))
 
+            self.logger.debug('match {0} : {1} : {2}'.format(match[0], match[1], match[2]))
             self.logger.debug('page_url {0}'.format(page_url))
             self.logger.debug('rating {0}'.format(rating))
             self.logger.debug('language {0}'.format(language))
@@ -238,8 +249,11 @@ class YifySubtitles:
         :type archive: dict of [str, unicode]
         """
 
-        with closing(urlopen(archive['url'])) as f:
-            content = StringIO(f.read())
+        req = Request(archive['url'])
+        req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
+
+        with closing(urlopen(req)) as f:
+            content = BytesIO(f.read())
 
         with ZipFile(content) as f:
             filenames = [
@@ -268,8 +282,7 @@ class YifySubtitles:
 
         return {
             'Brazilian Portuguese': 'Portuguese (Brazil)',
-            'Farsi/Persian': 'Persian',
-            'French':'French',
+            'Farsi/Persian': 'Persian'
         }.get(language, language)
 
     @staticmethod
@@ -297,6 +310,7 @@ class YifySubtitles:
         :rtype: unicode
         """
 
-        pattern = re.compile(r'<a class="btn-icon download-subtitle" href="(.*?)"><span class="icon32 download"></span><span class="title">DOWNLOAD SUBTITLE</span></a>', re.UNICODE)
+        # pattern = re.compile(r'<a class="btn-icon download-subtitle" href="(.*?)"><span class="icon32 download"></span><span class="title">DOWNLOAD SUBTITLE</span></a>', re.UNICODE)
+        pattern = re.compile(r'<a class="btn-icon download-subtitle" href="(.*?)">')
         match = pattern.search(page)
         return str(match.group(1)) if match else None
