@@ -201,16 +201,7 @@ class YifySubtitles:
         :type languages: list of unicode
         """
 
-        # UGLY hack but I don't understand why this is not working ...
-        with open('temp.data', 'w') as data:
-            data.write(page)
-        page = ''
-        with open('temp.data','r') as data:
-            page=''.join(data.readlines())
-
-        # page = pge.decode('utf-8')
-        # page = str(pge, 'utf-8')
-        pattern = re.compile(r'<tr data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*<td class="rating-cell">\s*.*</span>\n\s*</td>\n\s*<td class.*\n\s*<span.*>.*</span>\n\s*<span class="sub-lang">(.*)?</span>\n\s*</td>\n\s*<td>\n\s*<a href="(.*)?">')
+        pattern = re.compile(r'<tr data-id=".*?"(?: class="((?:high|low)-rating)")?>\s*<td class="rating-cell">\s*.*</span>\s*</td>\s*<td class.*\s*<span.*>.*</span>\s*<span class="sub-lang">(.*)?</span>\s*</td>\s*<td>\s*<a href="([^">]*)?')
 
         # self.logger.debug(u'page {0}'.format(page))
         self.logger.debug('languages {0}'.format(languages))
