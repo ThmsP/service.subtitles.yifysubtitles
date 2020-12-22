@@ -163,8 +163,11 @@ class YifySubtitles:
         )
 
         with closing(urlopen(req)) as page:
-            encoding = page.headers.get_content_charset("charset")
-            return str(page.read(), encoding)
+            try:
+                encoding = page.headers.get_content_charset("charset")
+            except:
+                encoding = page.info().getparam('charset')
+            return page.read().decode(encoding)
 
     def _fetch_subtitle_page(self, link):
         """Fetch a subtitle page.
@@ -185,8 +188,11 @@ class YifySubtitles:
         )
 
         with closing(urlopen(req)) as page:
-            encoding = page.headers.get_content_charset("charset")
-            return str(page.read(), encoding)
+            try:
+                encoding = page.headers.get_content_charset("charset")
+            except:
+                encoding = page.info().getparam('charset')
+            return page.read().decode(encoding)
 
     def _list_subtitles(self, page, languages):
         """List subtitles from the movie page.
@@ -242,7 +248,10 @@ class YifySubtitles:
         )
 
         with closing(urlopen(req)) as f:
-            content = BytesIO(f.read())
+            try:
+                content = BytesIO(f.read())
+            except:
+                content = StringIO(f.read())
 
         with ZipFile(content) as f:
             filenames = [
