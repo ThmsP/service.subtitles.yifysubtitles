@@ -119,7 +119,12 @@ class YifySubtitles:
         path = os.path.join(self.workdir, os.path.basename(filename))
 
         self.logger.debug("Downloading subtitle archive from {0}".format(url))
-        with closing(urlopen(url)) as f:
+        req = Request(url)
+        req.add_header(
+            "User-Agent",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36",
+        )
+        with closing(urlopen(req)) as f:
             content = StringIO(f.read())
 
         self.logger.debug("Extracting subtitle to {0}".format(path))

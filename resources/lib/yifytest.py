@@ -4,7 +4,12 @@
 from shutil import rmtree
 from tempfile import mkdtemp
 from .omdbapi import OMDbAPI
-from .omdbapikey import apikey  #  This is personal, get one : http://www.omdbapi.com/
+try:
+    from .omdbapikey import apikey  #  This is personal, get one : http://www.omdbapi.com/
+except:
+    import xbmcaddon
+    apikey = xbmcaddon.Addon().getSetting('omdb_api_key')
+
 
 # from rest7api import Rest7API
 from .yifysubtitles import YifySubtitles

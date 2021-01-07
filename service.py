@@ -20,9 +20,10 @@ import xbmcplugin
 import sys
 
 try: #python3
-    import urllib.request, urllib.parse, urllib.error
+    # import urllib.request, urllib.parse, urllib.error
+    import urllib.parse as url_parse
 except:
-    import urllib
+    import urllib as url_parse
 
 
 __addon__ = xbmcaddon.Addon()
@@ -44,7 +45,10 @@ sys.path.append(__resource__)
 
 
 from omdbapi import OMDbAPI
-from omdbapikey import apikey  #  This is personal, get one : http://www.omdbapi.com/
+try : 
+    from omdbapikey import apikey  #  This is personal, get one : http://www.omdbapi.com/
+except :
+    apikey = __addon__.getSetting('omdb_api_key')
 from yifysubtitles import YifySubtitles, YifySubtitlesListener, YifySubtitlesLogger
 
 
@@ -240,7 +244,7 @@ class YifySubtitlesService(YifySubtitlesListener, YifySubtitlesLogger):
         self._languages_codes = []
         if "languages" in self._parameters:
             for language in (
-                urllib.parse.unquote(self._parameters["languages"])
+                url_parse.unquote(self._parameters["languages"])
                 .decode("utf-8")
                 .split(",")
             ):

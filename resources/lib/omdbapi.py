@@ -12,11 +12,11 @@ from json import loads
 import sys
 
 try: #python3
-    from urllib.request import urlopen
+    from urllib.request import urlopen, Request
     from urllib.parse import quote_plus
 except:
     from urllib import quote_plus
-    from urllib2 import urlopen
+    from urllib2 import urlopen, Request
 
 
 class OMDbAPI:
@@ -44,7 +44,12 @@ class OMDbAPI:
         self.logger.debug("Looking for {0} ({1})".format(title, year))
 
         url = "{0}&t={1}&y={2}".format(self._base_url, quote_plus(title), year)
-        with closing(urlopen(url)) as f:
+        req = Request(url)
+        req.add_header(
+            "User-Agent",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36",
+        )
+        with closing(urlopen(req)) as f:
             response = loads(f.read())
 
         if not response.get("Response", "False") == "True":
