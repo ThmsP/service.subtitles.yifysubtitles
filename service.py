@@ -19,10 +19,9 @@ import xbmcplugin
 
 import sys
 
-pyver = sys.version_info.major
-if pyver >= 3:
+try: #python3
     import urllib.request, urllib.parse, urllib.error
-else:
+except:
     import urllib
 
 

@@ -11,11 +11,10 @@ from json import loads
 
 import sys
 
-pyver = sys.version_info.major
-if pyver >= 3:
+try: #python3
     from urllib.request import urlopen
     from urllib.parse import quote_plus
-else:
+except:
     from urllib import quote_plus
     from urllib2 import urlopen
 

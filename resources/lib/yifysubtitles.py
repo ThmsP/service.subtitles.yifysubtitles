@@ -15,14 +15,13 @@ import os
 
 import sys
 
-pyver = sys.version_info.major
-if pyver >= 3:
+try: #python3
     from io import StringIO, BytesIO
     from urllib.request import urlopen, Request
-else:
+except:
     from StringIO import StringIO
     from urllib2 import urlopen, Request
-from six import add_metaclass
+from resources.lib.six import add_metaclass
 
 
 @add_metaclass(ABCMeta)
